@@ -1,0 +1,12 @@
+#!/bin/bash
+backupdir=''
+site=''
+get=$(curl -s $site/index.html)
+touch $backupdir/.lastget
+last=$(cat $backupdir/.lastget)
+if [[ "$get" != "$last"  ]] ;then
+	diff "$get" "$last"
+	timestamp=$(date +%s)
+	wget -HkpP $backupdir/$timestamp $site
+	echo "$get" > $backupdir/.lastget
+fi
