@@ -1,4 +1,4 @@
-# TempleOSbackup
+# SiteBackup
 script that is degined to back up a given site and can be run as a cron job and will only download when changes are made
 
 usage: 
