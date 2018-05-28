@@ -1,11 +1,19 @@
 #!/bin/bash
-backupdir='/var/www/html/td'
-site='www.templeos.org'
-get=$(curl -s $site)
+backupdir=''
+sharedir=''
+site=''
+whitelist='png,jpg,jpeg,gif,bmp,html,PNG,JPG,JPEG,GIF,BMP,HTML'
+
 touch $backupdir/.lastget
+
+hash=$(curl -s $site | sha256sum)
 last=$(cat $backupdir/.lastget)
-if [[ "$get" != "$last"  ]] ;then
-	timestamp=$(date +%s)
-	wget -HkpP $backupdir/$timestamp -A png,jpg,jpeg,gif,bmp,html,PNG,JPG,JPEG,GIF,BMP,HTML $site
-	echo "$get" > $backupdir/.lastget
+
+if [[ "$hash" != "$last"  ]] ;then
+        timestamp=$(date +%s)
+        wget -nv -rkpP $backupdir/$timestamp -A $whitelist $site
+        echo "$hash" > $backupdir/.lastget
+        rsync -a $backupdir $sharedir
+else
+        echo "No changes"
 fi
