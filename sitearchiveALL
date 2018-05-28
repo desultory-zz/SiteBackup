@@ -1,11 +1,18 @@
 #!/bin/bash
 backupdir=''
+sharedir=''
 site=''
-get=$(curl -s $site)
+
 touch $backupdir/.lastget
+
+hash=$(curl -s $site | sha256sum)
 last=$(cat $backupdir/.lastget)
-if [[ "$get" != "$last"  ]] ;then
-	timestamp=$(date +%s)
-	wget -HkpP $backupdir/$timestamp $site
-	echo "$get" > $backupdir/.lastget
+
+if [[ "$hash" != "$last"  ]] ;then
+        timestamp=$(date +%s)
+        wget -nv -rkpP $backupdir/$timestamp $site
+        echo "$hash" > $backupdir/.lastget
+        rsync -a $backupdir $sharedir
+else
+        echo "No changes"
 fi
